@@ -1,9 +1,6 @@
 ﻿using Caliburn.Micro;
-using RMDesktopUI.Helpers;
+using RM.WPF.Library.Api;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RMDesktopUI.ViewModels
@@ -70,6 +67,9 @@ namespace RMDesktopUI.ViewModels
             {
                 ErrorMessage = "";
                 var authUser = await _apiHelper.Authenticate(UserName, Password);
+
+                //gets user info a saves it as singleton
+                await _apiHelper.GetLoggedInUserInfo(authUser.Access_Token);
             }
             catch (Exception ex)
             {

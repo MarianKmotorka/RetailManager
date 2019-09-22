@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.WPF", "RMDesktopUI\RM.WP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.WebApi.Library", "RM.WebApi.Library\RM.WebApi.Library.csproj", "{C4B01178-5EA4-44C8-B999-B77AB7044D4B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.WPF.Library", "RM.WPF.Library\RM.WPF.Library.csproj", "{DDD6031D-E8C4-490B-A56F-0C3A8229E98F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{C4B01178-5EA4-44C8-B999-B77AB7044D4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4B01178-5EA4-44C8-B999-B77AB7044D4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4B01178-5EA4-44C8-B999-B77AB7044D4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDD6031D-E8C4-490B-A56F-0C3A8229E98F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDD6031D-E8C4-490B-A56F-0C3A8229E98F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDD6031D-E8C4-490B-A56F-0C3A8229E98F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDD6031D-E8C4-490B-A56F-0C3A8229E98F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

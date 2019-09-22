@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
-using RMDesktopUI.Models;
+using RM.WPF.Library.Models;
 
-namespace RMDesktopUI.Helpers
+namespace RM.WPF.Library.Api
 {
     public interface IApiHelper
     {
         Task<AuthenticatedUser> Authenticate(string userName, string password);
+        Task GetLoggedInUserInfo(string token);
     }
 }
