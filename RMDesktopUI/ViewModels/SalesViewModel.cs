@@ -7,7 +7,7 @@ namespace RMDesktopUI.ViewModels
     {
         private BindingList<string> _products;
         private BindingList<string> _cart;
-        private int _quantity;
+        private int _productQuantity;
 
         public BindingList<string> Products
         {
@@ -28,13 +28,13 @@ namespace RMDesktopUI.ViewModels
 
             }
         }
-        public int Quantity
+        public int ProductQuantity
         {
-            get { return _quantity; }
+            get { return _productQuantity; }
             set
             {
-                _quantity = value;
-                NotifyOfPropertyChange(() => Quantity);
+                _productQuantity = value;
+                NotifyOfPropertyChange(() => ProductQuantity);
             }
         }
         public string Total

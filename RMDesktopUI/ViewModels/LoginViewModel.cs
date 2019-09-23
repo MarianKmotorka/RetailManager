@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using RM.WPF.Library.Api;
+using RMDesktopUI.EventModels;
 using System;
 using System.Threading.Tasks;
 
@@ -10,11 +11,13 @@ namespace RMDesktopUI.ViewModels
         private string _userName;
         private string _password;
         private IApiHelper _apiHelper;
+        private IEventAggregator _eventAggregator;
         private string _errorMessage;
 
-        public LoginViewModel(IApiHelper apiHelper)
+        public LoginViewModel(IApiHelper apiHelper, IEventAggregator eventAggregator)
         {
             _apiHelper = apiHelper;
+            _eventAggregator = eventAggregator;
         }
 
         public string UserName
@@ -69,6 +72,7 @@ namespace RMDesktopUI.ViewModels
 
                 //gets user info a saves it as singleton
                 await _apiHelper.GetLoggedInUserInfo(authUser.Access_Token);
+                _eventAggregator.PublishOnUIThread(new LogOnEvent());
             }
             catch (Exception ex)
             {

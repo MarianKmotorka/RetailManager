@@ -58,8 +58,8 @@ namespace RM.WPF.Library.Api
                     _loggedInUserModel.EmailAddress = user.EmailAddress;
                     _loggedInUserModel.Token = token;
                 }
-
-                throw new Exception(response.ReasonPhrase);
+                else
+                    throw new Exception(response.ReasonPhrase);
             }
         }
 
