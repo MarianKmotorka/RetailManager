@@ -60,7 +60,6 @@ namespace RMDesktopUI.ViewModels
             }
         }
 
-
         public async Task LogIn()
         {
             try

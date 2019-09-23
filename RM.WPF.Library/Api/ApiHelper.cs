@@ -21,7 +21,6 @@ namespace RM.WPF.Library.Api
 
         public async Task<AuthenticatedUser> Authenticate(string userName, string password)
         {
-
             var data = new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string,string>("grant_type","password"),
