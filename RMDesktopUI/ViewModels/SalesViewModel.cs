@@ -1,15 +1,23 @@
 ﻿using Caliburn.Micro;
+using RM.WPF.Library.Api;
+using RM.WPF.Library.Models;
 using System.ComponentModel;
 
 namespace RMDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
-        private BindingList<string> _products;
-        private BindingList<string> _cart;
+        private IProductEndpoint _productEndpoint;
+        private BindingList<ProductModel> _products;
+        private BindingList<ProductModel> _cart;
         private int _productQuantity;
 
-        public BindingList<string> Products
+        public SalesViewModel(IProductEndpoint productEndpoint)
+        {
+            _productEndpoint = productEndpoint;
+        }
+
+        public BindingList<ProductModel> Products
         {
             get { return _products; }
             set
@@ -18,7 +26,7 @@ namespace RMDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => Products);
             }
         }
-        public BindingList<string> Cart
+        public BindingList<ProductModel> Cart
         {
             get { return _cart; }
             set
@@ -76,5 +84,11 @@ namespace RMDesktopUI.ViewModels
         public void RemoveFromCart() { }
 
         public void Checkout() { }
+
+        protected override async void OnViewLoaded(object view)
+        {
+            base.OnViewLoaded(view);
+            Products = new BindingList<ProductModel>(await _productEndpoint.GetAll());
+        }
     }
 }

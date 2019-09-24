@@ -10,7 +10,8 @@ namespace RM.WPF.Library.Api
 {
     public class ApiHelper : IApiHelper
     {
-        private HttpClient _apiClient;
+        public HttpClient ApiClient { get; private set; }
+
         private ILoggedInUserModel _loggedInUserModel;
 
         public ApiHelper(ILoggedInUserModel loggedInUserModel)
@@ -28,7 +29,7 @@ namespace RM.WPF.Library.Api
                 new KeyValuePair<string,string>("password",password)
             });
 
-            using(var response = await _apiClient.PostAsync("/token", data))
+            using(var response = await ApiClient.PostAsync("/token", data))
             {
                 if(response.IsSuccessStatusCode)
                 {
@@ -42,11 +43,11 @@ namespace RM.WPF.Library.Api
 
         public async Task GetLoggedInUserInfo(string token)
         {
-            _apiClient.DefaultRequestHeaders.Clear();
-            _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _apiClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            ApiClient.DefaultRequestHeaders.Clear();
+            ApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            ApiClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
-            using (var response = await _apiClient.GetAsync("/api/user"))
+            using (var response = await ApiClient.GetAsync("/api/user"))
             {
                 if (response.IsSuccessStatusCode)
                 {
@@ -67,10 +68,10 @@ namespace RM.WPF.Library.Api
         {
             var api = ConfigurationManager.AppSettings["api"];
 
-            _apiClient = new HttpClient();
-            _apiClient.BaseAddress = new Uri(api);
-            _apiClient.DefaultRequestHeaders.Accept.Clear();
-            _apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            ApiClient = new HttpClient();
+            ApiClient.BaseAddress = new Uri(api);
+            ApiClient.DefaultRequestHeaders.Accept.Clear();
+            ApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
     }
 }
