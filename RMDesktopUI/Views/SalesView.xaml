@@ -34,10 +34,10 @@
         <!-- Column 0 -->
         <TextBlock Text="Products" Grid.Row="1"/>
         <ListBox Grid.Row="2" MinWidth="200" MinHeight="250"
-                 x:Name="Products">
+                 x:Name="Products" SelectedItem="{Binding SelectedProduct}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding ProductName}"/>
+                    <TextBlock Text="{Binding DisplayText}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -53,7 +53,14 @@
         <!-- Column 2 -->
         <TextBlock Grid.Column="2" Text="Cart" Grid.Row="1"/>
         <ListBox Grid.Row="2" MinWidth="200" MinHeight="250"
-                 x:Name="Cart" Grid.Column="2"/>
+                 x:Name="Cart" Grid.Column="2" 
+                 SelectedItem="{Binding SelectedCartItem}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DisplayText}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <DockPanel Grid.Column="2" Grid.Row="3">
             <TextBlock Text="SubTotal:"/>

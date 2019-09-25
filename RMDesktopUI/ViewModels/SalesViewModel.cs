@@ -2,6 +2,7 @@
 using RM.WPF.Library.Api;
 using RM.WPF.Library.Models;
 using System.ComponentModel;
+using System.Linq;
 
 namespace RMDesktopUI.ViewModels
 {
@@ -9,14 +10,36 @@ namespace RMDesktopUI.ViewModels
     {
         private IProductEndpoint _productEndpoint;
         private BindingList<ProductModel> _products;
-        private BindingList<ProductModel> _cart;
-        private int _productQuantity;
+        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private ProductModel _selectedProduct;
+        private int _productQuantity = 1;
+        private CartItemModel _selectedCartItem;
 
         public SalesViewModel(IProductEndpoint productEndpoint)
         {
             _productEndpoint = productEndpoint;
         }
 
+        public CartItemModel SelectedCartItem
+        {
+            get { return _selectedCartItem; }
+            set
+            {
+                _selectedCartItem = value;
+                NotifyOfPropertyChange(() => SelectedProduct);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
+            }
+        }
+        public ProductModel SelectedProduct
+        {
+            get { return _selectedProduct; }
+            set
+            {
+                _selectedProduct = value;
+                NotifyOfPropertyChange(() => SelectedProduct);
+                NotifyOfPropertyChange(() => CanAddToCart);
+            }
+        }
         public BindingList<ProductModel> Products
         {
             get { return _products; }
@@ -26,7 +49,7 @@ namespace RMDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => Products);
             }
         }
-        public BindingList<ProductModel> Cart
+        public BindingList<CartItemModel> Cart
         {
             get { return _cart; }
             set
@@ -43,6 +66,8 @@ namespace RMDesktopUI.ViewModels
             {
                 _productQuantity = value;
                 NotifyOfPropertyChange(() => ProductQuantity);
+                NotifyOfPropertyChange(() => CanAddToCart);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
             }
         }
         public string Total
@@ -51,7 +76,11 @@ namespace RMDesktopUI.ViewModels
         }
         public string SubTotal
         {
-            get { return "$0.00"; }
+            get
+            {
+                var subtotal = Cart.Sum(x => x.Product.RetailPrice * x.QuantityInCart);
+                return subtotal.ToString("C");
+            }
         }
         public string Tax
         {
@@ -61,27 +90,77 @@ namespace RMDesktopUI.ViewModels
         {
             get
             {
-                return false;
+                var output = false;
+
+                if (SelectedProduct?.QuantityInStock >= ProductQuantity && ProductQuantity > 0)
+                    output = true;
+
+                return output;
             }
         }
         public bool CanRemoveFromCart
         {
             get
             {
-                return false;
+                var output = false;
+
+                if (ProductQuantity > 0 && ProductQuantity <= SelectedCartItem?.QuantityInCart)
+                    return true;
+
+                return output;
             }
         }
-        public bool CanCheckout
+        public bool CanCheckout 
         {
             get
             {
-                return false;
+                return Cart.Any(x => x.QuantityInCart > 0);
             }
         }
 
-        public void AddToCart() { }
+        public void AddToCart()
+        {
+            var existingItem = Cart.SingleOrDefault(x => x.Product == SelectedProduct);
 
-        public void RemoveFromCart() { }
+            if (existingItem != null)
+            {
+                existingItem.QuantityInCart += ProductQuantity;
+                Cart.ResetBindings();
+            }
+            else
+            {
+                var cartItem = new CartItemModel
+                {
+                    Product = SelectedProduct,
+                    QuantityInCart = ProductQuantity
+                };
+
+                Cart.Add(cartItem);
+            }
+
+            SelectedProduct.QuantityInStock -= ProductQuantity;
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => CanCheckout);
+            Products.ResetBindings();
+            ProductQuantity = 1;
+        }
+
+        public void RemoveFromCart()
+        {
+            SelectedCartItem.QuantityInCart -= ProductQuantity;
+
+            var product = Products.Single(x => x == SelectedCartItem.Product);
+            product.QuantityInStock += ProductQuantity;
+
+            ProductQuantity = 1;
+            Products.ResetBindings();
+            Cart.ResetBindings();
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => CanCheckout);
+
+            if (SelectedCartItem.QuantityInCart == 0)
+                Cart.Remove(SelectedCartItem);
+        }
 
         public void Checkout() { }
 
