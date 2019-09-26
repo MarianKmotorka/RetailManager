@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using RM.WPF.Library.Api;
+using RM.WPF.Library.Helpers;
 using RM.WPF.Library.Models;
 using System.ComponentModel;
 using System.Linq;
@@ -9,15 +10,17 @@ namespace RMDesktopUI.ViewModels
     public class SalesViewModel : Screen
     {
         private IProductEndpoint _productEndpoint;
+        private IConfigHelper _configHelper;
         private BindingList<ProductModel> _products;
         private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
         private ProductModel _selectedProduct;
         private int _productQuantity = 1;
         private CartItemModel _selectedCartItem;
 
-        public SalesViewModel(IProductEndpoint productEndpoint)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
         {
             _productEndpoint = productEndpoint;
+            _configHelper = configHelper;
         }
 
         public CartItemModel SelectedCartItem
@@ -71,21 +74,11 @@ namespace RMDesktopUI.ViewModels
             }
         }
         public string Total
-        {
-            get { return "$0.00"; }
-        }
+            => (CalculateSubtotal() + CalculateTax()).ToString("C");
         public string SubTotal
-        {
-            get
-            {
-                var subtotal = Cart.Sum(x => x.Product.RetailPrice * x.QuantityInCart);
-                return subtotal.ToString("C");
-            }
-        }
+            => CalculateSubtotal().ToString("C");
         public string Tax
-        {
-            get { return "$0.00"; }
-        }
+            => CalculateTax().ToString("C");
         public bool CanAddToCart
         {
             get
@@ -140,11 +133,12 @@ namespace RMDesktopUI.ViewModels
 
             SelectedProduct.QuantityInStock -= ProductQuantity;
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => CanCheckout);
             Products.ResetBindings();
             ProductQuantity = 1;
         }
-
         public void RemoveFromCart()
         {
             SelectedCartItem.QuantityInCart -= ProductQuantity;
@@ -156,18 +150,29 @@ namespace RMDesktopUI.ViewModels
             Products.ResetBindings();
             Cart.ResetBindings();
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => CanCheckout);
 
             if (SelectedCartItem.QuantityInCart == 0)
                 Cart.Remove(SelectedCartItem);
         }
-
         public void Checkout() { }
 
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
             Products = new BindingList<ProductModel>(await _productEndpoint.GetAll());
+        }
+
+        private decimal CalculateSubtotal()
+        {
+            return Cart.Sum(x => x.Product.RetailPrice * x.QuantityInCart);
+        }
+        private decimal CalculateTax()
+        {
+            var taxRate = _configHelper.TaxRate;
+            return Cart.Sum(x => x.Product.RetailPrice * x.QuantityInCart * (x.Product.IsTaxable ? taxRate : 0));
         }
     }
 }
