@@ -21,7 +21,7 @@ namespace DataManager.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("AuthDb", throwIfV1Schema: false)
         {
         }
         

@@ -37,7 +37,19 @@
                  x:Name="Products" SelectedItem="{Binding SelectedProduct}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding DisplayText}"/>
+                    <StackPanel>
+                        <TextBlock Text="{Binding ProductName}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Margin="0 0 5 0" >
+                                <TextBlock Text="Price: " FontSize="13" />
+                                <TextBlock Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" FontSize="13"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Quantity: " FontSize="13"/>
+                                <TextBlock Text="{Binding QuantityInStock}" FontSize="13"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -57,13 +69,25 @@
                  SelectedItem="{Binding SelectedCartItem}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding DisplayText}"/>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Product.ProductName}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" Margin="0 0 5 0">
+                                <TextBlock Text="Price: " FontSize="13" />
+                                <TextBlock Text="{Binding Product.RetailPrice, StringFormat='{}{0:C}'}" FontSize="13"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Quantity: " FontSize="13"/>
+                                <TextBlock Text="{Binding QuantityInCart}" FontSize="13"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
 
         <DockPanel Grid.Column="2" Grid.Row="3">
-            <TextBlock Text="SubTotal:"/>
+            <TextBlock Text="SubTotal:" Margin="0 0 10 0"/>
             <TextBlock Text="$0.00" TextAlignment="Right" x:Name="SubTotal"/>
         </DockPanel>
         <DockPanel Grid.Column="2" Grid.Row="4">

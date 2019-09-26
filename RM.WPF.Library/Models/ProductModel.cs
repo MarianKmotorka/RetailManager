@@ -14,6 +14,5 @@ namespace RM.WPF.Library.Models
         public decimal RetailPrice { get; set; }
         public int QuantityInStock { get; set; }
         public bool IsTaxable { get; set; }
-        public string DisplayText => $"{ProductName} {RetailPrice.ToString("C")} ({QuantityInStock} pcs)";
     }
 }
