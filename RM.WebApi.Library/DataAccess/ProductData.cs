@@ -16,5 +16,12 @@ namespace RM.WebApi.Library.DataAccess
             var products = data.LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "RM.Database");
             return products;
         }
+
+        public ProductModel GetById(int productId)
+        {
+            var data = new SqlDataAccess();
+            var product = data.LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "RM.Database").SingleOrDefault();
+            return product;
+        }
     }
 }

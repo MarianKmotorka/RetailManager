@@ -4,12 +4,14 @@ using RM.WPF.Library.Helpers;
 using RM.WPF.Library.Models;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RMDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
         private IProductEndpoint _productEndpoint;
+        private ISaleEndpoint _saleEndpoint;
         private IConfigHelper _configHelper;
         private BindingList<ProductModel> _products;
         private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
@@ -17,9 +19,12 @@ namespace RMDesktopUI.ViewModels
         private int _productQuantity = 1;
         private CartItemModel _selectedCartItem;
 
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
+        public SalesViewModel(IProductEndpoint productEndpoint,
+            ISaleEndpoint saleEndpoint,
+            IConfigHelper configHelper)
         {
             _productEndpoint = productEndpoint;
+            _saleEndpoint = saleEndpoint;
             _configHelper = configHelper;
         }
 
@@ -157,7 +162,21 @@ namespace RMDesktopUI.ViewModels
             if (SelectedCartItem.QuantityInCart == 0)
                 Cart.Remove(SelectedCartItem);
         }
-        public void Checkout() { }
+        public async Task Checkout() 
+        {
+            var sale = new SaleModel();
+
+            foreach (var item in Cart)
+            {
+                sale.SaleDetails.Add(new SaleDetailModel
+                {
+                    ProductId = item.Product.Id,
+                    Quantity = item.QuantityInCart
+                });
+            }
+
+            await _saleEndpoint.Post(sale);
+        }
 
         protected override async void OnViewLoaded(object view)
         {
