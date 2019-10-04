@@ -16,7 +16,7 @@ namespace RM.WPF.Library.Helpers
         {
             get
             {
-                var taxRateString = ConfigurationManager.AppSettings["taxRate"];
+                var taxRateString = ConfigurationManager.AppSettings["taxRate"].Replace(',', '.');
 
                 if (decimal.TryParse(taxRateString, out decimal taxRate ))
                     return taxRate;
