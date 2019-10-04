@@ -1,8 +1,10 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using RM.WPF.Library.Api;
 using RM.WPF.Library.Helpers;
 using RM.WPF.Library.Models;
 using RMDesktopUI.Helpers;
+using RMDesktopUI.Models;
 using RMDesktopUI.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -28,7 +30,9 @@ namespace RMDesktopUI
 
         protected override void Configure()
         {
-            _container.Instance(_container)
+            _container
+                .Instance(_container)
+                .Instance(ConfigureAutoMapper())
                 .PerRequest<ISaleEndpoint, SaleEndpoint>()
                 .PerRequest<IProductEndpoint, ProductEndpoint>();
 
@@ -64,6 +68,17 @@ namespace RMDesktopUI
         protected override void BuildUp(object instance)
         {
             _container.BuildUp(instance);
+        }
+
+        private IMapper ConfigureAutoMapper()
+        {
+            var config = new MapperConfiguration(x =>
+            {
+                x.CreateMap<ProductModel, ProductDisplayModel>();
+                x.CreateMap<CartItemModel, CartItemDisplayModel>();
+            });
+
+            return config.CreateMapper();
         }
     }
 }

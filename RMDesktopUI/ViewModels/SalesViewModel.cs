@@ -1,7 +1,10 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using RM.WPF.Library.Api;
 using RM.WPF.Library.Helpers;
 using RM.WPF.Library.Models;
+using RMDesktopUI.Models;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,22 +16,25 @@ namespace RMDesktopUI.ViewModels
         private IProductEndpoint _productEndpoint;
         private ISaleEndpoint _saleEndpoint;
         private IConfigHelper _configHelper;
-        private BindingList<ProductModel> _products;
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
-        private ProductModel _selectedProduct;
+        private IMapper _mapper;
+        private BindingList<ProductDisplayModel> _products;
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
+        private ProductDisplayModel _selectedProduct;
+        private CartItemDisplayModel _selectedCartItem;
         private int _productQuantity = 1;
-        private CartItemModel _selectedCartItem;
 
         public SalesViewModel(IProductEndpoint productEndpoint,
             ISaleEndpoint saleEndpoint,
-            IConfigHelper configHelper)
+            IConfigHelper configHelper,
+            IMapper mapper)
         {
             _productEndpoint = productEndpoint;
             _saleEndpoint = saleEndpoint;
             _configHelper = configHelper;
+            _mapper = mapper;
         }
 
-        public CartItemModel SelectedCartItem
+        public CartItemDisplayModel SelectedCartItem
         {
             get { return _selectedCartItem; }
             set
@@ -38,7 +44,7 @@ namespace RMDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => CanRemoveFromCart);
             }
         }
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
             set
@@ -48,7 +54,7 @@ namespace RMDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => CanAddToCart);
             }
         }
-        public BindingList<ProductModel> Products
+        public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
             set
@@ -57,7 +63,7 @@ namespace RMDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => Products);
             }
         }
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set
@@ -123,11 +129,10 @@ namespace RMDesktopUI.ViewModels
             if (existingItem != null)
             {
                 existingItem.QuantityInCart += ProductQuantity;
-                Cart.ResetBindings();
             }
             else
             {
-                var cartItem = new CartItemModel
+                var cartItem = new CartItemDisplayModel
                 {
                     Product = SelectedProduct,
                     QuantityInCart = ProductQuantity
@@ -137,12 +142,12 @@ namespace RMDesktopUI.ViewModels
             }
 
             SelectedProduct.QuantityInStock -= ProductQuantity;
+            ProductQuantity = 1;
+
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => CanCheckout);
-            Products.ResetBindings();
-            ProductQuantity = 1;
         }
         public void RemoveFromCart()
         {
@@ -150,17 +155,15 @@ namespace RMDesktopUI.ViewModels
 
             var product = Products.Single(x => x == SelectedCartItem.Product);
             product.QuantityInStock += ProductQuantity;
-
             ProductQuantity = 1;
-            Products.ResetBindings();
-            Cart.ResetBindings();
+
+            if (SelectedCartItem.QuantityInCart == 0)
+                Cart.Remove(SelectedCartItem);
+
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => CanCheckout);
-
-            if (SelectedCartItem.QuantityInCart == 0)
-                Cart.Remove(SelectedCartItem);
         }
         public async Task Checkout() 
         {
@@ -181,7 +184,8 @@ namespace RMDesktopUI.ViewModels
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            Products = new BindingList<ProductModel>(await _productEndpoint.GetAll());
+            var products = _mapper.Map<List<ProductDisplayModel>>(await _productEndpoint.GetAll());
+            Products = new BindingList<ProductDisplayModel>(products);
         }
 
         private decimal CalculateSubtotal()
