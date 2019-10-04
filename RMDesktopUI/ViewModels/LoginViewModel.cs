@@ -68,6 +68,7 @@ namespace RMDesktopUI.ViewModels
             try
             {
                 ErrorMessage = "";
+                _eventAggregator.PublishOnUIThread(new LoadingEvent { IsLoading = true });
                 var authUser = await _apiHelper.Authenticate(UserName, Password);
 
                 //gets user info a saves it as singleton
@@ -77,6 +78,7 @@ namespace RMDesktopUI.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
+                _eventAggregator.PublishOnUIThread(new LoadingEvent { IsLoading = false });
             }
         }
     }

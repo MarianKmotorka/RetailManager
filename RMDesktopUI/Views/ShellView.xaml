@@ -17,6 +17,11 @@
         </Menu>
         <Grid>
             <ContentControl x:Name="ActiveItem" Margin="20 5 20 20"/>
+            <ContentControl Visibility="{Binding IsLoading,Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ContentControl.Content>
+                    <local:LoadingView />
+                </ContentControl.Content>
+            </ContentControl>
         </Grid>
     </DockPanel>
 </Window>
