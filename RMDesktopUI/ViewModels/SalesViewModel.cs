@@ -4,6 +4,7 @@ using RM.WPF.Library.Api;
 using RM.WPF.Library.Helpers;
 using RM.WPF.Library.Models;
 using RMDesktopUI.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -179,11 +180,28 @@ namespace RMDesktopUI.ViewModels
             }
 
             await _saleEndpoint.Post(sale);
+            await ResetSalesViewModel();
+
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => CanCheckout);
+        }
+
+        private async Task ResetSalesViewModel()
+        {
+            Cart = new BindingList<CartItemDisplayModel>();
+            await LoadProducts();
         }
 
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
+            await LoadProducts();
+        }
+
+        private async Task LoadProducts()
+        {
             var products = _mapper.Map<List<ProductDisplayModel>>(await _productEndpoint.GetAll());
             Products = new BindingList<ProductDisplayModel>(products);
         }

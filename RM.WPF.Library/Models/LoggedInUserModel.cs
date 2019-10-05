@@ -14,5 +14,11 @@ namespace RM.WPF.Library.Models
         public string EmailAddress { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Token { get; set; }
+
+        public void LogOff()
+        {
+            Id = FirstName = LastName = EmailAddress = Token = "";
+            CreatedDate = DateTime.MinValue;
+        }
     }
 }
