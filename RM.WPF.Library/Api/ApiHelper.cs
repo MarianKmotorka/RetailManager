@@ -73,5 +73,10 @@ namespace RM.WPF.Library.Api
             ApiClient.DefaultRequestHeaders.Accept.Clear();
             ApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
+
+        public void LogOffUser()
+        {
+            ApiClient.DefaultRequestHeaders.Clear();
+        }
     }
 }

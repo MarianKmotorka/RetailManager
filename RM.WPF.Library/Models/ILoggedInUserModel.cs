@@ -11,6 +11,6 @@ namespace RM.WPF.Library.Models
         string LastName { get; set; }
         string Token { get; set; }
 
-        void LogOff();
+        void ResetModel();
     }
 }
